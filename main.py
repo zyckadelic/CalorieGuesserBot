@@ -82,7 +82,13 @@ def start_bot():
 
 # Start Flask server
 if __name__ == '__main__':
-    # Run Telegram bot in a separate thread
-    threading.Thread(target=start_bot).start()
-    # Start Flask app (for UptimeRobot)
-    flask_app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))
+    import threading
+
+    # Start Flask in a separate thread
+    threading.Thread(target=lambda: flask_app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 10000)))).start()
+
+    # Run Telegram bot in the main thread (to avoid signal errors)
+    app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
+    app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
+    app.add_error_handler(error_handler)
+    app.run_polling()
