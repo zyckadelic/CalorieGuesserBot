@@ -70,7 +70,11 @@ Return:
     await update.message.reply_text(f"🍽️ Estimate for @{user.username or user.first_name}:\n\n{clean_text}")
 
 # Start Telegram bot
+import asyncio
+
 def start_bot():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
     app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
     app.add_error_handler(error_handler)
